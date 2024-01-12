@@ -1,0 +1,81 @@
+.ant-pagination {
+  .ant-pagination-item {
+    border-radius: 2px;
+    border: 1px solid #abacab;
+    background-color: #fff;
+    font-size: 11px;
+    font-family: Poppins;
+    overflow: hidden;
+
+    a {
+      color: #000000 !important;
+    }
+
+    &:hover {
+      border-color: #67a961 !important;
+
+      a {
+        background-color: #67a961;
+        color: #ffffff !important;
+      }
+    }
+
+    &.ant-pagination-item-active {
+      border-color: #67a961;
+      color: #ffffff;
+      background-color: #67a961;
+
+      a {
+        color: #ffffff !important;
+      }
+    }
+  }
+
+  .ant-pagination-next,
+  .ant-pagination-prev {
+    border-radius: 2px;
+    border: 1px solid #abacab;
+    background-color: #fff;
+    font-size: 11px;
+    font-family: Poppins;
+    overflow: hidden;
+
+    button {
+      color: #000000 !important;
+      display: flex !important;
+      justify-content: center;
+      align-items: center;
+    }
+
+    &:hover {
+      border-color: #67a961 !important;
+
+      background-color: #67a961 !important;
+      button {
+        color: #ffffff !important;
+      }
+    }
+  }
+
+  .ant-pagination-jump-next {
+    border-radius: 2px;
+    font-size: 11px;
+    font-family: Poppins;
+    overflow: hidden;
+
+    a {
+      color: #000000 !important;
+
+      .ant-pagination-item-container {
+        display: flex !important;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+
+        span {
+          color: #67a961 !important;
+        }
+      }
+    }
+  }
+}

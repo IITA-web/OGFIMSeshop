@@ -1,0 +1,154 @@
+.modal {
+  .ant-modal-header {
+    display: none;
+  }
+
+  .ant-modal-close-x {
+    width: 40px;
+    height: 40px;
+    margin: 16px 16px 0 0;
+  }
+
+  .ant-modal-content {
+    border-radius: 4px;
+  }
+
+  .upsert-profile-modal-header {
+    padding: 24px 0 8px;
+    border-bottom: 1px solid #d1d1d1;
+
+    > h1 {
+      font-style: normal;
+      font-weight: 500;
+      font-size: 16px;
+      line-height: 100%;
+      color: #000000;
+    }
+
+    > p {
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 100%;
+      color: #767676;
+
+      span {
+        font-weight: 500;
+        color: #24272b;
+      }
+    }
+  }
+
+  .upsert-profile-modal-form {
+    padding: 48px 0 16px;
+  }
+
+  .upsert-profile-modal-form-column {
+    display: flex;
+    column-gap: 18px;
+  }
+
+  .upsert-profile-modal-form-column:last-child {
+    padding-top: 14px;
+  }
+
+  .upsert-profile-modal-form-field {
+    width: 100%;
+    margin-bottom: 24px;
+  }
+
+  .upsert-profile-modal-form-label {
+    display: block;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 140%;
+    letter-spacing: -0.01em;
+    color: #24272b;
+
+    span {
+      color: #d64045;
+    }
+  }
+
+  .upsert-profile-modal-form-input {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 140%;
+    width: 100%;
+    padding: 16px;
+
+    border: 1px solid #d1d1d1;
+    border-radius: 4px;
+
+    &::placeholder {
+      color: #7d7d7d;
+    }
+  }
+
+  %btn {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 19px;
+    letter-spacing: -0.01em;
+    border-radius: 4px;
+
+    padding: 14.5px;
+    width: 100%;
+  }
+
+  .upsert-profile-form-agree {
+    display: flex;
+    align-items: flex-start;
+    column-gap: 8px;
+  }
+
+  .upsert-profile-form-agree-text {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    color: #7d7d7d;
+
+    > a {
+      font-weight: 500;
+      color: #2f82fd;
+      text-decoration: underline;
+    }
+  }
+
+  .upsert-profile-modal-cancel-btn {
+    @extend %btn;
+    color: #7d7d7d;
+    background-color: #fff;
+    border: 1px solid #7d7d7d;
+  }
+
+  .upsert-profile-modal-save-btn {
+    @extend %btn;
+    color: #ffffff;
+    background: #00789a;
+    border: none;
+  }
+}
+
+.modal-select {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 140%;
+  letter-spacing: -0.01em;
+  color: #020202;
+
+  .ant-select-selector {
+    display: flex;
+    align-items: center;
+    border: 1px solid #d1d1d1 !important;
+    border-radius: 4px !important;
+    height: 58px !important;
+  }
+
+  .ant-select-selection-item {
+    line-height: 37px !important;
+  }
+}

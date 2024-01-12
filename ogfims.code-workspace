@@ -1,0 +1,16 @@
+{
+  "folders": [
+    {
+      "path": "api"
+    },
+    {
+      "path": "dashboard"
+    },
+    {
+      "path": "html"
+    }
+  ],
+  "settings": {
+    "jest.disabledWorkspaceFolders": ["ogfims", "ogfips-admin"]
+  }
+}
