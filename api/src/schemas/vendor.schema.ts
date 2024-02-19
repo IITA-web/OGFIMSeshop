@@ -36,6 +36,12 @@ export class Vendor extends Document {
 
   @Prop({ default: false })
   active: boolean;
+
+  @Prop()
+  refreshToken: string;
+
+  @Prop({ type: 'date' })
+  refreshTokenExp: Date;
 }
 
 export const VendorSchema = SchemaFactory.createForClass(Vendor);

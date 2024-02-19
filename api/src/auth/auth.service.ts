@@ -22,6 +22,8 @@ import {
 } from './dto/password.dto';
 import { NotificationsService } from 'src/utils/notification.service';
 import Util from 'src/utils/util';
+import * as randomToken from 'rand-token';
+import moment from 'moment';
 
 @Injectable()
 export class AuthService {
@@ -33,6 +35,42 @@ export class AuthService {
     private jwtService: JwtService,
     private notificationsService: NotificationsService,
   ) {}
+
+  async getJWTToken(vendor: Vendor): Promise<string> {
+    return await this.jwtService.signAsync({ ...vendor.toJSON() });
+  }
+
+  public async getRefreshToken(userId: string): Promise<string> {
+    const userDataToUpdate = {
+      refreshToken: randomToken.generate(16),
+      refreshTokenExp: moment().day(1).toDate(),
+    };
+
+    await this.vendorModel.updateOne(
+      { id: userId },
+      { $set: { userDataToUpdate } },
+    );
+    return userDataToUpdate.refreshToken;
+  }
+
+  public async validRefreshToken(
+    email: string,
+    refreshToken: string,
+  ): Promise<Vendor> {
+    const currentDate = moment().day(1).toDate();
+
+    let vendor = await this.vendorModel.findOne({
+      email: email,
+      refreshToken: refreshToken,
+      refreshTokenExp: { $gte: currentDate },
+    });
+
+    if (!vendor) {
+      return null;
+    }
+
+    return vendor;
+  }
 
   async findUserById(id: string): Promise<Vendor> {
     return await this.vendorModel.findById(id).exec();
@@ -136,7 +174,6 @@ export class AuthService {
         registered: true,
       };
     } catch (error) {
-      console.log(error);
       if (error?.code === 11000) {
         throw new ConflictException('Duplicate Email Entered');
       }
@@ -186,6 +223,7 @@ export class AuthService {
     this.notificationsService.sendWelcomeEmail(vendor.email, {
       name: vendor.first_name,
     });
+
     const token = this.jwtService.sign({ sub: vendor._id });
 
     return { token, user: vendor };
@@ -205,7 +243,7 @@ export class AuthService {
     return { message: 'Code resent' };
   }
 
-  async login(loginDto: LoginDto): Promise<{ token: string; user: Vendor }> {
+  async login(loginDto: LoginDto): Promise<Vendor> {
     const { emailOrPhone, password } = loginDto;
     const vendor = await this.vendorModel.findOne(
       {
@@ -241,13 +279,11 @@ export class AuthService {
     }
 
     try {
-      const token = this.jwtService.sign({ sub: vendor._id });
       const user = vendor;
 
       delete user.password;
-      return { token, user };
+      return user;
     } catch (e) {
-      console.log(e);
       throw new BadRequestException('Unable to authenticate your credentials');
     }
   }
@@ -276,40 +312,44 @@ export class AuthService {
   async resetPassword(
     resetPasswordDto: ResetPasswordDto,
   ): Promise<{ message: string }> {
-    const { resetToken, newPassword, emailOrPhone } = resetPasswordDto;
-    const vendor = await this.vendorModel.findOne({
-      $or: [{ email: emailOrPhone }, { phone_number: emailOrPhone }],
-    });
+    try {
+      const { resetToken, newPassword, emailOrPhone } = resetPasswordDto;
+      const vendor = await this.vendorModel.findOne({
+        $or: [{ email: emailOrPhone }, { phone_number: emailOrPhone }],
+      });
 
-    if (!vendor) {
-      throw new NotFoundException('Invalid or expired reset token');
+      if (!vendor) {
+        throw new NotFoundException('Invalid or expired reset token');
+      }
+
+      const isVerified = await this.notificationsService.verifySMS(
+        resetToken,
+        vendor.phone_number,
+      );
+
+      if (!isVerified || isVerified.status !== 'approved') {
+        throw new BadRequestException('Unable to verify code');
+      }
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+      await this.vendorModel.updateOne(
+        { _id: vendor._id },
+        {
+          password: hashedPassword,
+        },
+      );
+
+      this.notificationsService.sendSecurityEmail(vendor.email, {
+        name: vendor.first_name,
+      });
+
+      return {
+        message: 'Password changed successfully',
+      };
+    } catch (error) {
+      throw new BadRequestException('Unable to process request');
     }
-
-    const isVerified = await this.notificationsService.verifySMS(
-      resetToken,
-      vendor.phone_number,
-    );
-
-    if (!isVerified || isVerified.status !== 'approved') {
-      throw new BadRequestException('Unable to verify code');
-    }
-
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-    await this.vendorModel.updateOne(
-      { _id: vendor._id },
-      {
-        password: hashedPassword,
-      },
-    );
-
-    this.notificationsService.sendSecurityEmail(vendor.email, {
-      name: vendor.first_name,
-    });
-
-    return {
-      message: 'Password changed successfully',
-    };
   }
 
   async changePassword(
@@ -342,10 +382,9 @@ export class AuthService {
     };
   }
 
-  async updateProfile(
-    profile: UpdateVendorDto,
-    vendor: Vendor,
-  ): Promise<Vendor> {
+  async updateProfile(profile: UpdateVendorDto, user: Vendor): Promise<Vendor> {
+    const vendor = await this.vendorModel.findById(user._id);
+
     if (profile.first_name) {
       vendor.first_name = profile.first_name;
     }

@@ -20,12 +20,13 @@ type AuthState = {
   updateProfile: (payload: any) => Promise<any>;
   resendCode: (emailorPhone: string) => Promise<any>;
   logout: () => void;
+  refreshToken: () => void;
   clear: (key: string, value: unknown) => void;
 };
 
 const useAuthStore = create<AuthState>()(
   devtools((set) => ({
-    isAuthenticated: !!window.localStorage.getItem("token"),
+    isAuthenticated: !!window.localStorage.getItem("user"), //TODO: check cookie for token s
     user: window.localStorage.getItem("user")
       ? JSON.parse(window.localStorage.getItem("user"))
       : null,
@@ -35,16 +36,16 @@ const useAuthStore = create<AuthState>()(
     isSuccess: false,
     isFailed: false,
     oldAccount: null,
+
     login: async (payload) => {
       set({ processing: true, isFailed: false, isSuccess: false });
 
       try {
         const apiService = new ApiService();
         const { data } = await apiService.Login(payload);
-        const { token, user } = data;
+        const { user } = data;
 
         if (user.active) {
-          window.localStorage.setItem("token", token);
           window.localStorage.setItem("user", JSON.stringify(user));
 
           set({
@@ -79,6 +80,7 @@ const useAuthStore = create<AuthState>()(
         });
       }
     },
+
     updateProfile: async (payload) => {
       set({ processing: true, isFailed: false, isSuccess: false });
 
@@ -117,9 +119,8 @@ const useAuthStore = create<AuthState>()(
       try {
         const apiService = new ApiService();
         const { data } = await apiService.PostSignup(payload);
-        const { token, user } = data;
+        const { user } = data;
 
-        window.localStorage.setItem("token", token);
         window.localStorage.setItem("user", JSON.stringify(user));
 
         set({
@@ -145,7 +146,14 @@ const useAuthStore = create<AuthState>()(
     },
     logout: () => {
       window.localStorage.clear();
+      const apiService = new ApiService();
+
+      apiService.Logout();
       set({ isAuthenticated: false, user: null });
+    },
+    refreshToken: () => {
+      const apiService = new ApiService();
+      apiService.RefreshToken();
     },
     clear: (key, value) => {
       set((state) => ({ ...state, [key]: value }));

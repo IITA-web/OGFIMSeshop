@@ -1,5 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
-import { SkipAuth } from 'src/auth/auth.guard';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { CallbackDto } from './callback.dto';
 import { CallbackService } from './callback.service';
 
@@ -8,7 +7,6 @@ export class CallbackController {
   constructor(private callbackService: CallbackService) {}
 
   @Post('')
-  @SkipAuth()
   requestCallback(@Body() callBackDto: CallbackDto): Promise<{
     message: string;
   }> {

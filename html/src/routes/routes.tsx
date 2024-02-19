@@ -1,4 +1,3 @@
-import PublicGuard from "../services/guards/Account";
 import HomePage from "@/pages/private/Home";
 import PrivateLayout from "@/components/layouts/private/Layout";
 import PublicLayout from "@/components/layouts/public/Layout";
@@ -73,19 +72,11 @@ const routes: RouteObject[] = [
             children: [
               {
                 index: true,
-                element: (
-                  <PublicGuard>
-                    <ProfilePage />
-                  </PublicGuard>
-                ),
+                element: <ProfilePage />,
               },
               {
                 path: "edit",
-                element: (
-                  <PublicGuard>
-                    <EditProfile />
-                  </PublicGuard>
-                ),
+                element: <EditProfile />,
               },
             ],
           },
@@ -100,11 +91,7 @@ const routes: RouteObject[] = [
             children: [
               {
                 path: "new",
-                element: (
-                  <PublicGuard>
-                    <CreateAd />
-                  </PublicGuard>
-                ),
+                element: <CreateAd />,
                 loader: async () => {
                   useProductStore.setState({
                     product: null,
@@ -115,20 +102,12 @@ const routes: RouteObject[] = [
               },
               {
                 path: "success/:id",
-                element: (
-                  <PublicGuard>
-                    <AdSuccess />
-                  </PublicGuard>
-                ),
+                element: <AdSuccess />,
               },
               {
                 path: ":id",
                 errorElement: <ErrorPage />,
-                element: (
-                  <PublicGuard>
-                    <CreateAd />
-                  </PublicGuard>
-                ),
+                element: <CreateAd />,
               },
             ],
           },

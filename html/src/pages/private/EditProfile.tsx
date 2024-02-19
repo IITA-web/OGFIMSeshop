@@ -1,4 +1,4 @@
-import { BiArrowBack } from "react-icons/bi";
+import { BiArrowBack, BiLoaderAlt } from "react-icons/bi";
 import { Link } from "react-router-dom";
 import "@/styles/Lofi.scss";
 import Avatar from "@/components/Avatar/Avatar";
@@ -180,7 +180,7 @@ const EditProfile = () => {
                   type="submit"
                   className="btn btn-secondary-2 w-fit lg:w-[300px] mx-auto mt-12"
                 >
-                  {processing ? "Saving" : "Save Changes"}
+                  {processing ? <BiLoaderAlt className="animate-spin text-white text-xl" /> : "Save Changes"}
                 </button>
               </div>
             </form>

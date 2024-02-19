@@ -9,21 +9,18 @@ import {
   Put,
   Query,
   Req,
-  Res,
   UseGuards,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { ProductDto } from './dto/product.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { Vendor } from 'src/schemas/vendor.schema';
-import { SkipAuth } from 'src/auth/auth.guard';
 
 @Controller('product')
 export class ProductController {
   constructor(private productService: ProductService) {}
 
   @Get('')
-  @SkipAuth()
   getAllProducts(
     @Query('page') page: number,
     @Query('search') search: string,
@@ -48,7 +45,6 @@ export class ProductController {
   }
 
   @Get('/vendor/:vendorId')
-  @SkipAuth()
   getProductsByVendor(
     @Param('vendorId') vendorId: string,
     @Query('page') page: number,
@@ -58,13 +54,11 @@ export class ProductController {
   }
 
   @Get('/:productId')
-  @SkipAuth()
   getProductsById(@Param('productId') productId: string): Promise<Product> {
     return this.productService.getProductsById(productId);
   }
 
   @Get('/slug/:slug')
-  @SkipAuth()
   async getProductsBySlug(
     @Param('slug') slug: string,
   ): Promise<Product | null> {
@@ -72,6 +66,7 @@ export class ProductController {
   }
 
   @Post('')
+  @UseGuards(AuthGuard('jwt'))
   createProduct(
     @Body() createProductDto: ProductDto,
     @Req() request,
@@ -80,6 +75,7 @@ export class ProductController {
   }
 
   @Put('/:productId')
+  @UseGuards(AuthGuard('jwt'))
   updateProduct(
     @Param('productId') productId: string,
     @Body() createProductDto: ProductDto,
@@ -88,11 +84,13 @@ export class ProductController {
   }
 
   @Put('/toggle-publish/:productId')
+  @UseGuards(AuthGuard('jwt'))
   togglePublish(@Param('productId') productId: string): Promise<Product> {
     return this.productService.togglePublish(productId);
   }
 
   @Delete('/:productId')
+  @UseGuards(AuthGuard('jwt'))
   deleteProduct(@Param('productId') productId: string): Promise<boolean> {
     return this.productService.deleteProduct(productId);
   }

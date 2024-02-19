@@ -11,11 +11,15 @@ export class NotificationsService {
 
   async sendSMSOnly(phone: string, message: string): Promise<any> {
     if (process.env.ENABLE_SMS === 'true') {
-      return this.twilioService.client.messages.create({
-        body: message,
-        from: process.env.TWILIO_PHONE_NUMBER,
-        to: Util.numberUtil(phone),
-      });
+      try {
+        return this.twilioService.client.messages.create({
+          body: message,
+          from: process.env.TWILIO_PHONE_NUMBER,
+          to: Util.numberUtil(phone),
+        });
+      } catch (e) {
+        console.error(e);
+      }
     }
   }
 

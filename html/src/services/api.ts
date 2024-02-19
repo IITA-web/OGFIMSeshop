@@ -13,22 +13,6 @@ export default class ApiService {
       },
     });
 
-    this.axiosInstance.interceptors.request.use(
-      (config) => {
-        const token = window.localStorage.getItem("token");
-
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
-        }
-
-        console.log(config.headers);
-        return config;
-      },
-      (error) => {
-        return Promise.reject(error);
-      }
-    );
-
     this.axiosInstance.interceptors.response.use(
       (response) => {
         return response;
@@ -43,6 +27,7 @@ export default class ApiService {
           });
 
           useAuthStore.getState().logout();
+          useAuthStore.getState().refreshToken();
 
           return Promise.reject(null);
         }
@@ -80,6 +65,14 @@ export default class ApiService {
 
   Login(payload: Record<string, string>): Promise<AxiosResponse<any>> {
     return this.axiosInstance.post(`/auth/login`, payload);
+  }
+
+  Logout(): Promise<AxiosResponse<any>> {
+    return this.axiosInstance.delete(`/auth/logout`);
+  }
+
+  RefreshToken(): Promise<AxiosResponse<any>> {
+    return this.axiosInstance.get(`/auth/refresh-token`);
   }
 
   ForgetPassword(payload: Record<string, string>): Promise<AxiosResponse<any>> {

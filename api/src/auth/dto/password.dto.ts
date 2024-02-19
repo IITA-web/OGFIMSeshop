@@ -6,11 +6,7 @@ export class ForgotPasswordDto {
   readonly emailOrPhone: string;
 }
 
-export class ResetPasswordDto {
-  @IsNotEmpty({ message: 'Please enter your email address or phone number' })
-  @IsString()
-  readonly emailOrPhone: string;
-
+export class ResetPasswordDto extends ForgotPasswordDto {
   @IsNotEmpty({ message: 'Reset token is empty' })
   @IsString()
   readonly resetToken: string;

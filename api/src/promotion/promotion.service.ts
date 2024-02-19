@@ -151,8 +151,6 @@ export class PromotionService {
         )
         .populate('vendor product');
 
-      console.log(expiringTomorrowPromotions);
-
       await Promise.all(
         expiringTomorrowPromotions.map(async (promotion) => {
           const { vendor, product } = promotion;

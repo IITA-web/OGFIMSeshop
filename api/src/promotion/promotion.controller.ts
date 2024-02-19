@@ -1,13 +1,14 @@
 import { PromotionService } from './promotion.service';
-import { Body, Controller, Post, Req } from '@nestjs/common';
+import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { PromotionDto } from './dto/promotion.dto';
-import { SkipAuth } from 'src/auth/auth.guard';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('promotion')
 export class PromotionController {
   constructor(private readonly promotionService: PromotionService) {}
 
   @Post('/product')
+  @UseGuards(AuthGuard('jwt'))
   async createSponsorship(
     @Body() sponsorshipData: PromotionDto,
     @Req() request,
@@ -19,7 +20,6 @@ export class PromotionController {
   }
 
   @Post('/webhook')
-  @SkipAuth()
   async handlePaystackEvent(@Body() payload, @Req() req) {
     const signature = req.headers['x-paystack-signature'];
 

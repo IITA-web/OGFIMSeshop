@@ -14,8 +14,8 @@ import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
 import { UserSchema } from 'src/schemas/old_platform.schema';
 import { TwilioModule } from 'nestjs-twilio';
-import { APP_GUARD } from '@nestjs/core';
-import { JwtAuthGuard } from './auth.guard';
+import { LocalStrategy } from './local.strategy';
+import { RefreshStrategy } from './refresh.strategy';
 
 @Module({
   imports: [
@@ -27,7 +27,7 @@ import { JwtAuthGuard } from './auth.guard';
           global: true,
           secret: config.getOrThrow<string>('JWT_SECRET'),
           signOptions: {
-            expiresIn: config.get<string>('JWT_EXPIRES') || '600s',
+            expiresIn: config.get<string>('JWT_EXPIRES') || '600d',
           },
         };
       },
@@ -49,10 +49,8 @@ import { JwtAuthGuard } from './auth.guard';
   providers: [
     AuthService,
     JwtStrategy,
-    {
-      provide: APP_GUARD,
-      useClass: JwtAuthGuard,
-    },
+    LocalStrategy,
+    RefreshStrategy,
     NotificationsService,
   ],
   exports: [JwtStrategy],
