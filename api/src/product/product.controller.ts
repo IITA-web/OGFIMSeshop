@@ -79,19 +79,30 @@ export class ProductController {
   updateProduct(
     @Param('productId') productId: string,
     @Body() createProductDto: ProductDto,
+    @Req() request,
   ): Promise<Product> {
-    return this.productService.updateProduct(productId, createProductDto);
+    return this.productService.updateProduct(
+      productId,
+      createProductDto,
+      request.user,
+    );
   }
 
   @Put('/toggle-publish/:productId')
   @UseGuards(AuthGuard('jwt'))
-  togglePublish(@Param('productId') productId: string): Promise<Product> {
-    return this.productService.togglePublish(productId);
+  togglePublish(
+    @Param('productId') productId: string,
+    @Req() request,
+  ): Promise<Product> {
+    return this.productService.togglePublish(productId, request.user);
   }
 
   @Delete('/:productId')
   @UseGuards(AuthGuard('jwt'))
-  deleteProduct(@Param('productId') productId: string): Promise<boolean> {
-    return this.productService.deleteProduct(productId);
+  deleteProduct(
+    @Param('productId') productId: string,
+    @Req() request,
+  ): Promise<boolean> {
+    return this.productService.deleteProduct(productId, request.user);
   }
 }

@@ -14,4 +14,18 @@ function AccountGuard({ children }: { children: JSX.Element }) {
   return children;
 }
 
+function NotAccountGuard({ children }: { children: JSX.Element }) {
+  const {
+    authStore: { isAuthenticated },
+  } = useStore();
+  let location = useLocation();
+
+  if (isAuthenticated) {
+    return <Navigate to="/profile" state={{ from: location }} replace />;
+  }
+
+  return children;
+}
+
+export { NotAccountGuard };
 export default AccountGuard;

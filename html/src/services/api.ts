@@ -26,7 +26,7 @@ export default class ApiService {
             position: toast.POSITION.TOP_RIGHT,
           });
 
-          useAuthStore.getState().logout();
+          // useAuthStore.getState().logout();
           useAuthStore.getState().refreshToken();
 
           return Promise.reject(null);

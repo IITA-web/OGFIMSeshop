@@ -118,7 +118,9 @@ const CreateAd = () => {
     }
 
     if (msg) {
-      navigate(`${id ? "/ad/success/" + id : "/detail/" + product.slug}`);
+      navigate(
+        `${!product.slug ? "/ad/success/" + id : "/detail/" + product.slug}`
+      );
     }
 
     return () => {

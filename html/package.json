@@ -9,7 +9,7 @@
     "postbuild": "react-snap --verbose",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "deploy": "ssh egbedayo@agroshop.ogunfarminfo.org rm -rf /var/www/html && scp -r dist egbedayo@agroshop.ogunfarminfo.org:/var/www/html"
+    "deploy": "ssh egbedayo@agroshop.ogunfarminfo.org rm -rf /var/www/html/dist && scp -r dist egbedayo@agroshop.ogunfarminfo.org:/var/www/html/dist"
   },
   "reactSnap": {
     "source": "dist"

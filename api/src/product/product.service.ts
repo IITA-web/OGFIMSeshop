@@ -2,7 +2,11 @@ import { SubCategoryService } from './../sub-category/sub-category.service';
 import { CategoryService } from './../category/category.service';
 import { Promotion } from 'src/schemas/promotion.schema';
 import { Vendor } from './../schemas/vendor.schema';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 import { Product, ProductDocument } from 'src/schemas/product.schema';
@@ -288,8 +292,14 @@ export class ProductService {
 
   async createProduct(
     createProductDto: ProductDto,
-    vendor: Vendor,
+    user: Vendor,
   ): Promise<Product> {
+    const vendor = await this.vendorModel.findOne({ _id: user._id });
+
+    if (!vendor) {
+      throw new UnauthorizedException('Vendor not found');
+    }
+
     const payload = {
       name: createProductDto.name,
       description: createProductDto.description,
@@ -311,10 +321,23 @@ export class ProductService {
     return product;
   }
 
-  async updateProduct(id: string, createProductDto: ProductDto): Promise<any> {
+  async updateProduct(
+    id: string,
+    createProductDto: ProductDto,
+    vendor: Vendor,
+  ): Promise<any> {
     try {
+      const product = await this.productModel.findOne({
+        _id: id,
+        vendor: vendor._id,
+      });
+
+      if (!product) {
+        throw new NotFoundException('Product not found');
+      }
+
       await this.productModel.updateOne(
-        { _id: id },
+        { _id: product._id },
         {
           ...createProductDto,
         },
@@ -326,11 +349,12 @@ export class ProductService {
     }
   }
 
-  async deleteProduct(id: string): Promise<boolean> {
+  async deleteProduct(id: string, user: Vendor): Promise<boolean> {
     try {
       const product = await this.productModel.findOne({
         _id: id,
         is_deleted: false,
+        vendor: user._id,
       });
 
       if (!product) {
@@ -338,12 +362,7 @@ export class ProductService {
       }
 
       product.is_deleted = true;
-      await (
-        await product.save()
-      ).populate(
-        'vendor',
-        '_id first_name image last_name createdAt phone_number email',
-      );
+      await product.save();
 
       return true;
     } catch (error) {
@@ -351,11 +370,12 @@ export class ProductService {
     }
   }
 
-  async togglePublish(id: string): Promise<Product> {
+  async togglePublish(id: string, user: Vendor): Promise<Product> {
     try {
       const product = await this.productModel.findOne({
         _id: id,
         is_deleted: false,
+        vendor: user._id,
       });
 
       if (!product) {
@@ -363,6 +383,7 @@ export class ProductService {
       }
 
       product.is_published = !product.is_published;
+
       await (
         await product.save()
       ).populate(

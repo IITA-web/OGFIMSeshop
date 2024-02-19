@@ -116,7 +116,7 @@ export class AuthController {
     return this.authService.changePassword(req.user, changePasswordDto);
   }
 
-  @Get('refresh-tokens')
+  @Get('refresh-token')
   @UseGuards(AuthGuard('refresh'))
   async regenerateTokens(
     @Req() req,

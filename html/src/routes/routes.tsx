@@ -7,7 +7,7 @@ import CreateAd from "@/pages/private/CreateAd";
 import AdSuccess from "@/pages/private/AdSuccess";
 import ProfilePage from "@/pages/private/Profile";
 import EditProfile from "@/pages/private/EditProfile";
-import { RouteObject } from "react-router-dom";
+import { Navigate, RouteObject } from "react-router-dom";
 import ForgotPassword from "@/pages/public/ForgotPassword";
 import ResetPassword from "@/pages/public/ResetPassword";
 import Login from "@/pages/public/Login";
@@ -16,6 +16,8 @@ import ResultPage from "@/pages/private/Result";
 import Information from "@/pages/public/Information";
 import ErrorPage from "@/pages/ErrorPage";
 import useProductStore from "@/store/slices/product.slice";
+import { NotAccountGuard } from "@/services";
+import AccountGuard from "@/services/guards/Account";
 
 const productAction = async ({ params }) => {
   if (params.id) {
@@ -72,11 +74,19 @@ const routes: RouteObject[] = [
             children: [
               {
                 index: true,
-                element: <ProfilePage />,
+                element: (
+                  <AccountGuard>
+                    <ProfilePage />
+                  </AccountGuard>
+                ),
               },
               {
                 path: "edit",
-                element: <EditProfile />,
+                element: (
+                  <AccountGuard>
+                    <EditProfile />
+                  </AccountGuard>
+                ),
               },
             ],
           },
@@ -90,8 +100,16 @@ const routes: RouteObject[] = [
             path: "ad",
             children: [
               {
+                index: true,
+                element: <Navigate to="/ad/new" />,
+              },
+              {
                 path: "new",
-                element: <CreateAd />,
+                element: (
+                  <AccountGuard>
+                    <CreateAd />
+                  </AccountGuard>
+                ),
                 loader: async () => {
                   useProductStore.setState({
                     product: null,
@@ -102,12 +120,20 @@ const routes: RouteObject[] = [
               },
               {
                 path: "success/:id",
-                element: <AdSuccess />,
+                element: (
+                  <AccountGuard>
+                    <AdSuccess />
+                  </AccountGuard>
+                ),
               },
               {
                 path: ":id",
                 errorElement: <ErrorPage />,
-                element: <CreateAd />,
+                element: (
+                  <AccountGuard>
+                    <CreateAd />
+                  </AccountGuard>
+                ),
               },
             ],
           },
@@ -122,7 +148,11 @@ const routes: RouteObject[] = [
   },
   {
     path: "auth",
-    element: <PublicLayout />,
+    element: (
+      <NotAccountGuard>
+        <PublicLayout />
+      </NotAccountGuard>
+    ),
     errorElement: (
       <PublicLayout>
         <ErrorPage />
